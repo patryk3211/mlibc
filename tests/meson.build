@@ -74,8 +74,10 @@ all_test_cases = [
 	'posix/flockfile',
 	'posix/basename',
 	'posix/regex',
+	'posix/sigtimedwait',
 	'glibc/getopt',
 	'glibc/ffsl-ffsll',
+	'linux/xattr',
 ]
 
 if host_machine.system() == 'linux'
@@ -152,6 +154,8 @@ foreach test_name : all_test_cases
 	elif test_subdir == 'glibc' and disable_glibc_option
 		continue
 	elif test_subdir == 'posix' and disable_posix_option
+		continue
+	elif test_subdir == 'linux' and disable_linux_option
 		continue
 	endif
 

@@ -130,6 +130,7 @@ int sys_close(int fd);
 [[gnu::weak]] int sys_fchmodat(int fd, const char *pathname, mode_t mode, int flags);
 [[gnu::weak]] int sys_utimensat(int dirfd, const char *pathname, const struct timespec times[2], int flags);
 [[gnu::weak]] int sys_mlockall(int flags);
+[[gnu::weak]] int sys_mlock(const void *addr, size_t len);
 
 // mlibc assumes that anonymous memory returned by sys_vm_map() is zeroed by the kernel / whatever is behind the sysdeps
 int sys_vm_map(void *hint, size_t size, int prot, int flags, int fd, off_t offset, void **window);
@@ -156,6 +157,9 @@ int sys_vm_unmap(void *pointer, size_t size);
 		sigset_t *__restrict retrieve);
 [[gnu::weak]] int sys_sigaction(int, const struct sigaction *__restrict,
 		struct sigaction *__restrict);
+// NOTE: POSIX says that behavior of timeout = nullptr is unspecified. We treat this case
+// as an infinite timeout, making sigtimedwait(..., nullptr) equivalent to sigwaitinfo(...)
+[[gnu::weak]] int sys_sigtimedwait(const sigset_t *__restrict set, siginfo_t *__restrict info, const struct timespec *__restrict timeout, int *out_signal);
 [[gnu::weak]] int sys_kill(int, int);
 [[gnu::weak]] int sys_accept(int fd, int *newfd, struct sockaddr *addr_ptr, socklen_t *addr_length);
 [[gnu::weak]] int sys_bind(int fd, const struct sockaddr *addr_ptr, socklen_t addr_length);
