@@ -2,6 +2,6 @@
 .global _start
 
 _start:
-    ; TODO: Implement
+    // TODO: Implement
 
 .size _start, . - _start

@@ -1,9 +1,9 @@
 rtdl_sources += files(
-	generic/io.cpp
+	'generic/io.cpp'
 )
 
 libc_sources += files(
-	generic/io.cpp
+	'generic/io.cpp'
 )
 
 if not no_headers

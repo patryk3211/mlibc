@@ -11,5 +11,9 @@
 #define MAP_SHARED      0x01
 #define MAP_ANON        0x02
 #define MAP_ANONYMOUS   0x02
+#define MAP_FIXED       0x04
+
+#define MREMAP_MAYMOVE 1
+#define MREMAP_FIXED 2
 
 #endif
