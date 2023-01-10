@@ -2,6 +2,7 @@
 .global _start
 
 _start:
-    // TODO: Implement
+    mov $main, %rdi
+    call __mlibc_entry
 
 .size _start, . - _start

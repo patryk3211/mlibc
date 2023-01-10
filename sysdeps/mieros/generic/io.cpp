@@ -23,7 +23,7 @@ namespace mlibc {
         return 0;
     }
 
-    int sys_write(int fd, void *buf, size_t count, ssize_t *bytes_written) {
+    int sys_write(int fd, void const *buf, size_t count, ssize_t *bytes_written) {
         ssysarg_t ret = syscall(SYSCALL_WRITE, fd, buf, count);
 
         if(ret < 0)
