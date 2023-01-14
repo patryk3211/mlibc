@@ -15,6 +15,10 @@ typedef unsigned long long sysarg_t;
 #define SYSCALL_MUNMAP  9
 #define SYSCALL_EXECVE  10
 
+#define SYSCALL_ARCH_PRCTL 11
+#define ARCH_SET_TCB 0
+#define ARCH_GET_TCB 1
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -61,6 +65,23 @@ static inline sysarg_t syscall6a(sysarg_t call, sysarg_t arg0, sysarg_t arg1, sy
     asm volatile("int $0x8F" : "=a"(ret) : "a"(call), "b"(arg0), "c"(arg1), "d"(arg2), "S"(arg3), "D"(arg4), "r"(arg5r) : "memory");
     return ret;
 }
+
+#define __SYSCALL_N0(call) syscall0a(call)
+#define __SYSCALL_N1(call, _1) syscall1a(call, (sysarg_t)_1)
+#define __SYSCALL_N2(call, _1, _2) syscall2a(call, (sysarg_t)_1, (sysarg_t)_2)
+#define __SYSCALL_N3(call, _1, _2, _3) syscall3a(call, (sysarg_t)_1, (sysarg_t)_2, (sysarg_t)_3)
+#define __SYSCALL_N4(call, _1, _2, _3, _4) syscall4a(call, (sysarg_t)_1, (sysarg_t)_2, (sysarg_t)_3, (sysarg_t)_4)
+#define __SYSCALL_N5(call, _1, _2, _3, _4, _5) syscall5a(call, (sysarg_t)_1, (sysarg_t)_2, (sysarg_t)_3, (sysarg_t)_4, (sysarg_t)_5)
+#define __SYSCALL_N6(call, _1, _2, _3, _4, _5, _6) syscall6a(call, (sysarg_t)_1, (sysarg_t)_2, (sysarg_t)_3, (sysarg_t)_4, (sysarg_t)_5, (sysarg_t)_6)
+
+#define __SYSCALL_NARGS_8ARG(_1, _2, _3, _4, _5, _6, _7, _8, ...) _8
+#define __SYSCALL_NARGS(...) __SYSCALL_NARGS_8ARG(dummy, ##__VA_ARGS__, 6, 5, 4, 3, 2, 1, 0)
+
+#define __SYSCALL_CONCAT(a, b) a ## b
+#define __SYSCALL_XCONCAT(a, b) __SYSCALL_CONCAT(a, b)
+
+#define __SYSCALLN_(M, ...) M(__VA_ARGS__)
+#define SYSCALL(call, ...) __SYSCALLN_(__SYSCALL_XCONCAT(__SYSCALL_N, __SYSCALL_NARGS(__VA_ARGS__)), call, ##__VA_ARGS__)
 
 #ifdef __cplusplus
 }

@@ -5,23 +5,20 @@
 
 namespace mlibc {
     void sys_exit(int code) {
-        syscall1a(SYSCALL_EXIT, code);
+        SYSCALL(SYSCALL_EXIT, code);
+        while(true);
     }
 
     void sys_libc_log(char const* msg) {
-        syscall3a(SYSCALL_WRITE, 2, (sysarg_t)msg, strlen(msg));
+        SYSCALL(SYSCALL_WRITE, 2, msg, strlen(msg));
     }
 
     void sys_libc_panic() {
-        syscall1a(SYSCALL_EXIT, -1);
+        SYSCALL(SYSCALL_EXIT, -1);
+        while(true);
     }
 
     int sys_clock_get(int clock, time_t *secs, long *nanos) {
-        /// UNIMPLEMENTED
-        return -1;
-    }
-
-    int sys_tcb_set(void* ptr) {
         /// UNIMPLEMENTED
         return -1;
     }

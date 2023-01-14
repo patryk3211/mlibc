@@ -31,4 +31,3 @@ if not headers_only
 		install_dir: get_option('libdir')
 	)
 endif
-

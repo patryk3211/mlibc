@@ -12,4 +12,9 @@ namespace mlibc {
         /// UNIMPLEMENTED
         return -1;
     }
+
+    int sys_tcb_set(void* ptr) {
+        /// UNIMPLEMENTED
+        return SYSCALL(SYSCALL_ARCH_PRCTL, ARCH_SET_TCB, (uintptr_t*)&ptr);
+    }
 }
