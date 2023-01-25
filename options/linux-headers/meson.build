@@ -54,6 +54,15 @@ if not no_headers
 		'include/linux/if.h',
 		'include/linux/kdev_t.h',
 		'include/linux/reboot.h',
+		'include/linux/capability.h',
+		'include/linux/resource.h',
+		'include/linux/hid.h',
+		'include/linux/loop.h',
+		'include/linux/rtc.h',
+		'include/linux/fiemap.h',
+		'include/linux/falloc.h',
+		'include/linux/prctl.h',
+		'include/linux/bpf.h',
 		subdir: 'linux'
 	)
 	install_headers(
@@ -64,5 +73,9 @@ if not no_headers
 	install_headers(
 		'include/linux/hdlc/ioctl.h',
 		subdir: 'linux/hdlc'
+	)
+	install_headers(
+		'include/mtd/mtd-user.h',
+		subdir: 'mtd'
 	)
 endif
