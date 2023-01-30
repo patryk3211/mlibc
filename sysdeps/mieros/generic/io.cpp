@@ -4,7 +4,7 @@
 
 namespace mlibc {
     int sys_open(const char *pathname, int flags, mode_t mode, int *fd) {
-        ssysarg_t ret = syscall(SYSCALL_OPEN, pathname, flags, mode);
+        ssysarg_t ret = syscall(SYS_open, pathname, flags, mode);
 
         if(ret < 0)
             return -ret;
@@ -14,7 +14,7 @@ namespace mlibc {
     }
 
     int sys_read(int fd, void *buf, size_t count, ssize_t *bytes_read) {
-        ssysarg_t ret = syscall(SYSCALL_READ, fd, buf, count);
+        ssysarg_t ret = syscall(SYS_read, fd, buf, count);
 
         if(ret < 0)
             return -ret;
@@ -24,7 +24,7 @@ namespace mlibc {
     }
 
     int sys_write(int fd, void const *buf, size_t count, ssize_t *bytes_written) {
-        ssysarg_t ret = syscall(SYSCALL_WRITE, fd, buf, count);
+        ssysarg_t ret = syscall(SYS_write, fd, buf, count);
 
         if(ret < 0)
             return -ret;
@@ -34,7 +34,7 @@ namespace mlibc {
     }
 
     int sys_seek(int fd, off_t offset, int whence, off_t *new_offset) {
-        ssysarg_t ret = syscall(SYSCALL_SEEK, fd, offset, whence);
+        ssysarg_t ret = syscall(SYS_seek, fd, offset, whence);
 
         if(ret < 0)
             return -ret;
@@ -44,6 +44,6 @@ namespace mlibc {
     }
 
     int sys_close(int fd) {
-        return -syscall(SYSCALL_CLOSE, fd);
+        return -syscall(SYS_close, fd);
     }
 }

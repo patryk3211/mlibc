@@ -4,18 +4,18 @@
 typedef long long ssysarg_t;
 typedef unsigned long long sysarg_t;
 
-#define SYSCALL_EXIT    1
-#define SYSCALL_OPEN    2
-#define SYSCALL_CLOSE   3
-#define SYSCALL_READ    4
-#define SYSCALL_WRITE   5
-#define SYSCALL_FORK    6
-#define SYSCALL_SEEK    7
-#define SYSCALL_MMAP    8
-#define SYSCALL_MUNMAP  9
-#define SYSCALL_EXECVE  10
+#define SYS_exit    1
+#define SYS_open    2
+#define SYS_close   3
+#define SYS_read    4
+#define SYS_write   5
+#define SYS_fork    6
+#define SYS_seek    7
+#define SYS_mmap    8
+#define SYS_munmap  9
+#define SYS_execve  10
 
-#define SYSCALL_ARCH_PRCTL 11
+#define SYS_arch_prctl 11
 #define ARCH_SET_TCB 0
 #define ARCH_GET_TCB 1
 

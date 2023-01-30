@@ -12,7 +12,7 @@ namespace mlibc {
     }
 
     int sys_vm_map(void *hint, size_t size, int prot, int flags, int fd, off_t offset, void **window) {
-        ssysarg_t ret = syscall(SYSCALL_MMAP, hint, size, prot, flags, fd, offset);
+        ssysarg_t ret = syscall(SYS_mmap, hint, size, prot, flags, fd, offset);
 
         if(ret < 0)
             return -ret;
@@ -22,6 +22,6 @@ namespace mlibc {
     }
 
     int sys_vm_unmap(void *pointer, size_t size) {
-        return -syscall(SYSCALL_MUNMAP, pointer, size);
+        return -syscall(SYS_munmap, pointer, size);
     }
 }

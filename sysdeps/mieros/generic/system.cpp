@@ -5,16 +5,16 @@
 
 namespace mlibc {
     void sys_exit(int code) {
-        syscall(SYSCALL_EXIT, code);
+        syscall(SYS_exit, code);
         while(true);
     }
 
     void sys_libc_log(char const* msg) {
-        syscall(SYSCALL_WRITE, 2, msg, strlen(msg));
+        syscall(SYS_write, 2, msg, strlen(msg));
     }
 
     void sys_libc_panic() {
-        syscall(SYSCALL_EXIT, -1);
+        syscall(SYS_exit, -1);
         while(true);
     }
 
@@ -34,7 +34,7 @@ namespace mlibc {
     }
 
     int sys_fork(pid_t *child) {
-        int status = syscall(SYSCALL_FORK);
+        int status = syscall(SYS_fork);
         if(status >= 0) {
             *child = status;
             return 0;
@@ -42,6 +42,6 @@ namespace mlibc {
     }
 
     int sys_execve(const char *path, char *const argv[], char *const envp[]) {
-        return -syscall(SYSCALL_EXECVE, path, argv, envp);
+        return -syscall(SYS_execve, path, argv, envp);
     }
 }

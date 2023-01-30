@@ -4,6 +4,6 @@
 
 namespace mlibc {
     int sys_tcb_set(void* ptr) {
-        return -syscall(SYSCALL_ARCH_PRCTL, ARCH_SET_TCB, (uintptr_t*)&ptr);
+        return -syscall(SYS_arch_prctl, ARCH_SET_TCB, (uintptr_t*)&ptr);
     }
 }

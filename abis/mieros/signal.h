@@ -175,6 +175,25 @@ typedef struct __ucontext {
 	sigset_t uc_sigmask;
 } ucontext_t;
 
+#elif defined(__i386__)
+// This is only here to get clang to compile
+typedef struct {
+	unsigned long oldmask;
+	unsigned long gregs[16];
+	unsigned long pc, pr, sr;
+	unsigned long gbr, mach, macl;
+	unsigned long fpregs[16];
+	unsigned long xfpregs[16];
+	unsigned int fpscr, fpul, ownedfp;
+} mcontext_t;
+
+typedef struct __ucontext {
+    unsigned long uc_flags;
+	struct __ucontext *uc_link;
+	stack_t uc_stack;
+	mcontext_t uc_mcontext;
+	sigset_t uc_sigmask;
+} ucontext_t;
 #else
 #error "Missing architecture specific code."
 #endif
