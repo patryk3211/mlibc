@@ -19,6 +19,10 @@ typedef unsigned long long sysarg_t;
 #define ARCH_SET_TCB 0
 #define ARCH_GET_TCB 1
 
+#define SYS_init_module_name 12
+#define SYS_uevent_poll 13
+#define SYS_uevent_complete 14
+
 #ifdef __cplusplus
 extern "C" {
 #endif
