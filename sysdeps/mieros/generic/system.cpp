@@ -11,6 +11,8 @@ namespace mlibc {
 
     void sys_libc_log(char const* msg) {
         syscall(SYS_write, 2, msg, strlen(msg));
+        char lf = '\n';
+        syscall(SYS_write, 2, &lf, 1);
     }
 
     void sys_libc_panic() {
