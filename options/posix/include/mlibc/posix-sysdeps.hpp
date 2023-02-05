@@ -49,6 +49,7 @@ int sys_open(const char *pathname, int flags, mode_t mode, int *fd);
 		size_t *bytes_read);
 
 int sys_read(int fd, void *buf, size_t count, ssize_t *bytes_read);
+[[gnu::weak]] int sys_readv(int fd, const struct iovec *iovs, int iovc, ssize_t *bytes_read);
 
 int sys_write(int fd, const void *buf, size_t count, ssize_t *bytes_written);
 [[gnu::weak]] int sys_pread(int fd, void *buf, size_t n, off_t off, ssize_t *bytes_read);
@@ -204,6 +205,12 @@ int sys_vm_unmap(void *pointer, size_t size);
 [[gnu::weak]] int sys_setregid(gid_t rgid, gid_t egid);
 
 [[gnu::weak]] int sys_poll(struct pollfd *fds, nfds_t count, int timeout, int *num_events);
+
+[[gnu::weak]] int sys_if_indextoname(unsigned int index, char *name);
+[[gnu::weak]] int sys_if_nametoindex(const char *name, unsigned int *ret);
+
+[[gnu::weak]] int sys_ptsname(int fd, char *buffer, size_t length);
+[[gnu::weak]] int sys_unlockpt(int fd);
 
 } //namespace mlibc
 

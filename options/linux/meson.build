@@ -48,10 +48,6 @@ if not no_headers
 		subdir: 'bits/linux'
 	)
 	install_headers(
-		'include/net/if_arp.h',
-		subdir: 'net'
-	)
-	install_headers(
 		'include/netpacket/packet.h',
 		subdir: 'netpacket'
 	)
@@ -81,6 +77,10 @@ if not no_headers
 		'include/sys/klog.h',
 		'include/sys/xattr.h',
 		subdir: 'sys'
+	)
+	install_headers(
+		'include/linux/libc-compat.h',
+		subdir: 'linux'
 	)
 endif
 

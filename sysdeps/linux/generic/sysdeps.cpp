@@ -1,6 +1,6 @@
+#include <asm/ioctls.h>
 #include <errno.h>
 #include <limits.h>
-#include <linux/reboot.h>
 
 #include <type_traits>
 
@@ -106,6 +106,14 @@ int sys_dup2(int fd, int flags, int newfd) {
 
 int sys_read(int fd, void *buffer, size_t size, ssize_t *bytes_read) {
 	auto ret = do_cp_syscall(SYS_read, fd, buffer, size);
+	if(int e = sc_error(ret); e)
+		return e;
+	*bytes_read = sc_int_result<ssize_t>(ret);
+	return 0;
+}
+
+int sys_readv(int fd, const struct iovec *iovs, int iovc, ssize_t *bytes_read) {
+	auto ret = do_cp_syscall(SYS_readv, fd, iovs, iovc);
 	if(int e = sc_error(ret); e)
 		return e;
 	*bytes_read = sc_int_result<ssize_t>(ret);
@@ -344,6 +352,7 @@ int sys_isatty(int fd) {
 
 #if __MLIBC_POSIX_OPTION
 
+#include <net/if.h>
 #include <sys/ioctl.h>
 #include <sys/utsname.h>
 #include <sys/stat.h>
@@ -748,13 +757,6 @@ int sys_msync(void *addr, size_t length, int flags) {
 	return 0;
 }
 
-int sys_reboot(int cmd) {
-	auto ret = do_syscall(SYS_reboot, LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, cmd, nullptr);
-	if (int e = sc_error(ret); e)
-		return e;
-	return 0;
-}
-
 int sys_getaffinity(pid_t pid, size_t cpusetsize, cpu_set_t *mask) {
 	auto ret = do_syscall(SYS_sched_getaffinity, pid, cpusetsize, mask);
 	if (int e = sc_error(ret); e)
@@ -992,7 +994,79 @@ int sys_setschedparam(void *tcb, int policy, const struct sched_param *param) {
 	return 0;
 }
 
+int sys_if_indextoname(unsigned int index, char *name) {
+	int fd = socket(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC, AF_UNSPEC);
+
+	if(fd < 0)
+		return 0;
+
+	struct ifreq ifr;
+	ifr.ifr_ifindex = index;
+
+	int ret = sys_ioctl(fd, SIOCGIFNAME, &ifr, NULL);
+	close(fd);
+
+	if(ret < 0) {
+		if(ret == ENODEV)
+			return ENXIO;
+		return ret;
+	}
+
+	strncpy(name, ifr.ifr_name, IF_NAMESIZE);
+
+	return 0;
+}
+
+int sys_if_nametoindex(const char *name, unsigned int *ret) {
+	int fd = socket(AF_UNIX, SOCK_DGRAM | SOCK_CLOEXEC, AF_UNSPEC);
+
+	if(fd < 0)
+		return -1;
+
+	struct ifreq ifr;
+	strncpy(ifr.ifr_name, name, sizeof ifr.ifr_name);
+
+	int r = ioctl(fd, SIOCGIFINDEX, &ifr);
+	close(fd);
+
+	*ret = (r < 0) ? r : ifr.ifr_ifindex;
+
+	return 0;
+}
+
+int sys_ptsname(int fd, char *buffer, size_t length) {
+	int index;
+	if(int e = sys_ioctl(fd, TIOCGPTN, &index, NULL); e)
+		return e;
+	if((size_t)snprintf(buffer, length, "/dev/pts/%d", index) >= length) {
+		return ERANGE;
+	}
+	return 0;
+}
+
+int sys_unlockpt(int fd) {
+	int unlock = 0;
+
+	if(int e = sys_ioctl(fd, TIOCSPTLCK, &unlock, NULL); e)
+		return e;
+
+	return 0;
+}
+
 #endif // __MLIBC_POSIX_OPTION
+
+#if __MLIBC_LINUX_OPTION
+
+#include <linux/reboot.h>
+
+int sys_reboot(int cmd) {
+	auto ret = do_syscall(SYS_reboot, LINUX_REBOOT_MAGIC1, LINUX_REBOOT_MAGIC2, cmd, nullptr);
+	if (int e = sc_error(ret); e)
+		return e;
+	return 0;
+}
+
+#endif // __MLIBC_LINUX_OPTION
 
 int sys_times(struct tms *tms, clock_t *out) {
 	auto ret = do_syscall(SYS_times, tms);

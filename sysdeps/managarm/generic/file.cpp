@@ -1,6 +1,7 @@
 #include <asm/ioctls.h>
 #include <dirent.h>
 #include <errno.h>
+#include <stdio.h>
 #include <sys/eventfd.h>
 #include <sys/inotify.h>
 #include <sys/signalfd.h>
@@ -827,16 +828,18 @@ int sys_socketpair(int domain, int type_and_flags, int proto, int *fds) {
 }
 
 int sys_msg_send(int sockfd, const struct msghdr *hdr, int flags, ssize_t *length) {
-	HelSgItem sglist[4];
-	__ensure(hdr->msg_iovlen <= 4);
+	frg::vector<HelSgItem, MemoryAllocator> sglist{getSysdepsAllocator()};
 	auto handle = getHandleForFd(sockfd);
 	if (!handle)
 		return EBADF;
 
 	size_t overall_size = 0;
 	for(int i = 0; i < hdr->msg_iovlen; i++) {
-		sglist[i].buffer = hdr->msg_iov[i].iov_base;
-		sglist[i].length = hdr->msg_iov[i].iov_len;
+		HelSgItem item{
+			.buffer = hdr->msg_iov[i].iov_base,
+			.length = hdr->msg_iov[i].iov_len,
+		};
+		sglist.push_back(item);
 		overall_size += hdr->msg_iov[i].iov_len;
 	}
 
@@ -869,7 +872,7 @@ int sys_msg_send(int sockfd, const struct msghdr *hdr, int flags, ssize_t *lengt
 		handle,
 		helix_ng::offer(
 			helix_ng::sendBragiHeadOnly(req, getSysdepsAllocator()),
-			helix_ng::sendBufferSg(sglist, hdr->msg_iovlen),
+			helix_ng::sendBufferSg(sglist.data(), hdr->msg_iovlen),
 			helix_ng::imbueCredentials(),
 			helix_ng::sendBuffer(hdr->msg_name, hdr->msg_namelen),
 			helix_ng::recvInline())
@@ -1600,6 +1603,21 @@ int sys_read(int fd, void *data, size_t max_size, ssize_t *bytes_read) {
 	}
 }
 
+int sys_readv(int fd, const struct iovec *iovs, int iovc, ssize_t *bytes_read) {
+	for(int i = 0; i < iovc; i++) {
+		ssize_t intermed = 0;
+
+		if(int e = sys_read(fd, iovs[i].iov_base, iovs[i].iov_len, &intermed); e)
+			return e;
+		else if(intermed == 0)
+			break;
+
+		*bytes_read += intermed;
+	}
+
+	return 0;
+}
+
 int sys_write(int fd, const void *data, size_t size, ssize_t *bytes_written) {
 	SignalGuard sguard;
 
@@ -1638,6 +1656,8 @@ int sys_write(int fd, const void *data, size_t size, ssize_t *bytes_written) {
 		return ENOSPC;
 	}else if(resp.error() == managarm::fs::Errors::WOULD_BLOCK) {
 		return EAGAIN;
+	}else if(resp.error() == managarm::fs::Errors::NOT_CONNECTED) {
+		return ENOTCONN;
 	}else{
 		__ensure(resp.error() == managarm::fs::Errors::SUCCESS);
 		*bytes_written = resp.size();
@@ -2448,6 +2468,25 @@ int sys_uname(struct utsname *buf) {
 
 int sys_madvise(void *, size_t, int) {
 	mlibc::infoLogger() << "mlibc: sys_madvise is a stub!" << frg::endlog;
+	return 0;
+}
+
+int sys_ptsname(int fd, char *buffer, size_t length) {
+	int index;
+	if(int e = sys_ioctl(fd, TIOCGPTN, &index, NULL); e)
+		return e;
+	if((size_t)snprintf(buffer, length, "/dev/pts/%d", index) >= length) {
+		return ERANGE;
+	}
+	return 0;
+}
+
+int sys_unlockpt(int fd) {
+	int unlock = 0;
+
+	if(int e = sys_ioctl(fd, TIOCSPTLCK, &unlock, NULL); e)
+		return e;
+
 	return 0;
 }
 
