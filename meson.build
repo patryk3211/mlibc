@@ -159,6 +159,18 @@ elif host_machine.system() == 'mieros'
 	disable_linux_option = true
 	rtdl_include_dirs += include_directories('sysdeps/mieros/include')
 	libc_include_dirs += include_directories('sysdeps/mieros/include')
+
+    if get_option('linux_kernel_headers') == ''
+		error('linux_kernel_headers is not set')
+	endif
+
+	if not import('fs').is_dir(get_option('linux_kernel_headers'))
+		error('linux_kernel_headers is not set to a valid path')
+	endif
+
+    rtdl_include_dirs += include_directories(get_option('linux_kernel_headers'))
+	libc_include_dirs += include_directories(get_option('linux_kernel_headers'))
+
 	subdir('sysdeps/mieros')
 else
 	error('No sysdeps defined for OS: ' + host_machine.system())

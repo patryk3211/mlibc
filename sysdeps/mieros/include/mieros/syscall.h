@@ -23,6 +23,10 @@ typedef unsigned long long sysarg_t;
 #define SYS_uevent_poll 13
 #define SYS_uevent_complete 14
 
+#define SYS_ioctl 15
+#define SYS_getid 16
+#define SYS_dup   17
+
 #ifdef __cplusplus
 extern "C" {
 #endif
