@@ -1,4 +1,3 @@
-#include "mlibc/posix-sysdeps.hpp"
 #include <mlibc/all-sysdeps.hpp>
 
 #include <mieros/syscall.h>
@@ -7,7 +6,7 @@
 
 namespace mlibc {
     int sys_open(const char *pathname, int flags, mode_t mode, int *fd) {
-        ssysarg_t ret = syscall(SYS_open, pathname, flags, mode);
+        ssysarg_t ret = syscall(SYS_openat, pathname, flags, mode, AT_FDCWD);
 
         if(ret < 0)
             return -ret;
@@ -89,5 +88,21 @@ namespace mlibc {
             return -ret;
 
         return 0;
+    }
+
+    int sys_mount(const char *source, const char *target, const char *fstype, unsigned long flags, const void *data) {
+        return -syscall(SYS_mount, source, target, fstype, flags, data);
+    }
+
+    int sys_umount2(const char *target, int flags) {
+        return -syscall(SYS_umount, target, flags);
+    }
+
+    int sys_symlinkat(const char *target_path, int dirfd, const char *link_path) {
+        return -syscall(SYS_symlinkat, target_path, dirfd, link_path);
+    }
+
+    int sys_symlink(const char *target_path, const char *link_path) {
+        return -syscall(SYS_symlinkat, target_path, AT_FDCWD, link_path);
     }
 }

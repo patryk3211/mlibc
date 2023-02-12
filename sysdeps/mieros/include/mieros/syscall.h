@@ -5,7 +5,7 @@ typedef long long ssysarg_t;
 typedef unsigned long long sysarg_t;
 
 #define SYS_exit    1
-#define SYS_open    2
+#define SYS_openat  2
 #define SYS_close   3
 #define SYS_read    4
 #define SYS_write   5
@@ -20,12 +20,14 @@ typedef unsigned long long sysarg_t;
 #define ARCH_GET_TCB 1
 
 #define SYS_init_module 12
-#define SYS_uevent_poll 13
-#define SYS_uevent_complete 14
+
+#define SYS_symlinkat 13
 
 #define SYS_ioctl 15
 #define SYS_getid 16
 #define SYS_dup   17
+#define SYS_mount  18
+#define SYS_umount 19
 
 #ifdef __cplusplus
 extern "C" {
