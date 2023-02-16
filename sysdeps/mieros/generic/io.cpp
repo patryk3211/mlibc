@@ -107,7 +107,7 @@ namespace mlibc {
     }
 
     int sys_open_dir(const char *path, int *handle) {
-        ssysarg_t ret = syscall(SYS_openat, path, O_PATH | O_DIRECTORY | O_CLOEXEC, 0, AT_FDCWD);
+        ssysarg_t ret = syscall(SYS_openat, path, O_DIRECTORY | O_CLOEXEC, 0, AT_FDCWD);
 
         if(ret < 0)
             return -ret;
