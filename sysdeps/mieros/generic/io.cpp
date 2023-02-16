@@ -105,4 +105,27 @@ namespace mlibc {
     int sys_symlink(const char *target_path, const char *link_path) {
         return -syscall(SYS_symlinkat, target_path, AT_FDCWD, link_path);
     }
+
+    int sys_open_dir(const char *path, int *handle) {
+        ssysarg_t ret = syscall(SYS_openat, path, O_PATH | O_DIRECTORY | O_CLOEXEC, 0, AT_FDCWD);
+
+        if(ret < 0)
+            return -ret;
+
+        *handle = ret;
+        return 0;
+    }
+
+    int sys_read_entries(int handle, void *buffer, size_t max_size, size_t *bytes_read) {
+        // We can use a simple read syscall here since we opened the file as
+        // a directory stream, it automatically outputs standard directory entries
+        // and we don't have to use any special syscalls.
+        ssysarg_t ret = syscall(SYS_read, handle, buffer, max_size);
+
+        if(ret < 0)
+            return ret;
+
+        *bytes_read = ret;
+        return 0;
+    }
 }

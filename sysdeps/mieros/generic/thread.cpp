@@ -15,4 +15,14 @@ namespace mlibc {
     int sys_gettid() {
         return syscall(SYS_getid, PROCID_TID);
     }
+
+    int sys_waitpid(pid_t pid, int* status, int flags, struct rusage*, pid_t* ret_pid) {
+        ssysarg_t result = syscall(SYS_waitpid, pid, status, flags);
+
+        if(result < 0)
+            return -result;
+
+        *ret_pid = result;
+        return 0;
+    }
 }
