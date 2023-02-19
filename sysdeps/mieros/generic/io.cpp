@@ -128,4 +128,8 @@ namespace mlibc {
         *bytes_read = ret;
         return 0;
     }
+
+    int sys_pipe(int *fds, int flags) {
+        return -syscall(SYS_pipe, fds, flags);
+    }
 }

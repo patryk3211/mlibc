@@ -28,6 +28,7 @@ typedef unsigned long long sysarg_t;
 #define SYS_dup   17
 #define SYS_mount  18
 #define SYS_umount 19
+#define SYS_pipe   20
 
 #ifdef __cplusplus
 extern "C" {
