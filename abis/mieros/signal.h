@@ -1,33 +1,11 @@
 #ifndef _ABIBITS_SIGNAL_H
 #define _ABIBITS_SIGNAL_H
 
-#include <abi-bits/pid_t.h>
-#include <abi-bits/uid_t.h>
-#include <bits/size_t.h>
-
-union sigval {
-	int sival_int;
-	void *sival_ptr;
-};
-
-typedef struct {
-	int si_signo;
-	int si_code;
-	int si_errno;
-	pid_t si_pid;
-	uid_t si_uid;
-	void *si_addr;
-	int si_status;
-	union sigval si_value;
-} siginfo_t;
+#include <asm/signal.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define SIG_ERR ((__sighandler)(void *)(-1))
-#define SIG_DFL ((__sighandler)(void *)(-2))
-#define SIG_IGN ((__sighandler)(void *)(-3))
 
 #define SIGHUP 1
 #define SIGINT 2
@@ -86,23 +64,7 @@ extern "C" {
 #define SEGV_MAPERR 1
 #define SEGV_ACCERR 2
 
-// TODO: replace this by uint64_t
-typedef long sigset_t;
-
 #define SIGUNUSED SIGSYS
-
-// constants for sigprocmask()
-#define SIG_BLOCK 1
-#define SIG_UNBLOCK 2
-#define SIG_SETMASK 3
-
-#define SA_NOCLDSTOP (1 << 0)
-#define SA_ONSTACK (1 << 1)
-#define SA_RESETHAND (1 << 2)
-#define SA_RESTART (1 << 3)
-#define SA_SIGINFO (1 << 4)
-#define SA_NOCLDWAIT (1 << 5)
-#define SA_NODEFER (1 << 6)
 
 #define MINSIGSTKSZ 2048
 #define SIGSTKSZ 8192
@@ -147,13 +109,6 @@ struct sigevent {
 	// MISSING: sigev_notify_attributes
 };
 
-struct sigaction {
-	void (*sa_handler)(int);
-	sigset_t sa_mask;
-	int sa_flags;
-	void (*sa_sigaction)(int, siginfo_t *, void *);
-};
-
 #if defined(__x86_64__) || defined(__aarch64__)
 // TODO: This is wrong for AArch64.
 
@@ -175,25 +130,6 @@ typedef struct __ucontext {
 	sigset_t uc_sigmask;
 } ucontext_t;
 
-#elif defined(__i386__)
-// This is only here to get clang to compile
-typedef struct {
-	unsigned long oldmask;
-	unsigned long gregs[16];
-	unsigned long pc, pr, sr;
-	unsigned long gbr, mach, macl;
-	unsigned long fpregs[16];
-	unsigned long xfpregs[16];
-	unsigned int fpscr, fpul, ownedfp;
-} mcontext_t;
-
-typedef struct __ucontext {
-    unsigned long uc_flags;
-	struct __ucontext *uc_link;
-	stack_t uc_stack;
-	mcontext_t uc_mcontext;
-	sigset_t uc_sigmask;
-} ucontext_t;
 #else
 #error "Missing architecture specific code."
 #endif

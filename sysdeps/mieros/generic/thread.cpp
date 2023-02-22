@@ -12,8 +12,28 @@ namespace mlibc {
         return syscall(SYS_getid, PROCID_PID);
     }
 
+    pid_t sys_getppid() {
+        return syscall(SYS_getid, PROCID_PARENT);
+    }
+
     int sys_gettid() {
         return syscall(SYS_getid, PROCID_TID);
+    }
+
+    uid_t sys_getuid() {
+        return syscall(SYS_getid, PROCID_UID);
+    }
+
+    uid_t sys_geteuid() {
+        return syscall(SYS_getid, PROCID_EUID);
+    }
+
+    gid_t sys_getgid() {
+        return syscall(SYS_getid, PROCID_GID);
+    }
+
+    gid_t sys_getegid() {
+        return syscall(SYS_getid, PROCID_EGID);
     }
 
     int sys_waitpid(pid_t pid, int* status, int flags, struct rusage*, pid_t* ret_pid) {

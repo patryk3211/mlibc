@@ -7,7 +7,8 @@ libc_sources += files(
 	'generic/entry.cpp',
 	'generic/mem.cpp',
 	'generic/system.cpp',
-	'generic/thread.cpp'
+	'generic/thread.cpp',
+    'generic/signals.cpp'
 )
 
 if not no_headers
