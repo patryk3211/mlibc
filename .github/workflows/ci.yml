@@ -20,6 +20,7 @@ jobs:
                 sudo pip3 install setuptools
                 sudo pip3 install -U jsonschema
                 sudo pip3 install meson xbstrap
+                sudo pip3 install pyexpect
           - name: Prepare directories
             run: |
                 mkdir src/
@@ -56,7 +57,7 @@ jobs:
     compile-sysdeps:
         strategy:
             matrix:
-                sysdeps: [dripos, lemon, aero, ironclad, vinix, lyre]
+                sysdeps: [dripos, lemon, aero, ironclad, lyre]
         name: Compile sysdeps
         runs-on: ubuntu-20.04
         steps:

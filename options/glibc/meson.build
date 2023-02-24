@@ -6,12 +6,14 @@ libc_sources += files(
 	'generic/stdio_ext-stubs.cpp',
 	'generic/sys-ioctl.cpp',
 	'generic/err.cpp',
+	'generic/error.cpp',
 	'generic/resolv-stubs.cpp',
 	'generic/shadow-stubs.cpp',
 	'generic/printf.cpp',
 	'generic/glibc-signal.cpp',
 	'generic/execinfo.cpp',
 	'generic/string.cpp',
+	'generic/personality.cpp',
 )
 
 if not no_headers
@@ -19,6 +21,7 @@ if not no_headers
 		'include/getopt.h',
 		'include/stdio_ext.h',
 		'include/err.h',
+		'include/error.h',
 		'include/paths.h',
 		'include/sysexits.h',
 		'include/resolv.h',
