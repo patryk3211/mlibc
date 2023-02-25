@@ -1,5 +1,8 @@
 rtdl_sources += files(
-	'generic/io.cpp'
+	'generic/io.cpp',
+    'generic/mem.cpp',
+    'generic/system.cpp',
+    'generic/thread.cpp'
 )
 
 libc_sources += files(
@@ -8,8 +11,14 @@ libc_sources += files(
 	'generic/mem.cpp',
 	'generic/system.cpp',
 	'generic/thread.cpp',
-    'generic/signals.cpp'
+	'generic/signals.cpp'
 )
+
+if host_machine.cpu_family() == 'x86_64'
+	libc_sources += files(
+		'x86_64/signals.S'
+	)
+endif
 
 if not no_headers
 	install_headers(
@@ -63,12 +72,28 @@ if not no_headers
 endif
 
 if not headers_only
-	crt = custom_target('crt0',
+    crt_src_dir = ''
+    if host_machine.cpu_family() == 'x86_64'
+        crt_src_dir = 'x86_64/crt'
+    else
+        error('Missing crt files for architecture')
+    endif
+
+	crt0 = custom_target('crt0',
 		build_by_default: true,
 		command: c_compiler.cmd_array() + ['-c', '-o', '@OUTPUT@', '@INPUT@'],
-		input: 'x86_64/crt0.s',
+		input: crt_src_dir / 'crt0.s',
 		output: 'crt0.o',
 		install: true,
 		install_dir: get_option('libdir')
 	)
+
+    shared_crt1 = custom_target('Scrt1',
+        build_by_default: true,
+        command: c_compiler.cmd_array() + ['-fPIC', '-c', '-o', '@OUTPUT@', '@INPUT@'],
+        input: crt_src_dir / 'Scrt1.s',
+        output: 'Scrt1.o',
+		install: true,
+		install_dir: get_option('libdir')
+    )
 endif

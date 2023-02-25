@@ -66,17 +66,6 @@ extern "C" {
 
 #define SIGUNUSED SIGSYS
 
-#define MINSIGSTKSZ 2048
-#define SIGSTKSZ 8192
-#define SS_ONSTACK 1
-#define SS_DISABLE 2
-
-typedef struct __stack {
-        void *ss_sp;
-        size_t ss_size;
-        int ss_flags;
-} stack_t;
-
 // constants for sigev_notify of struct sigevent
 #define SIGEV_NONE 1
 #define SIGEV_SIGNAL 2
@@ -108,31 +97,6 @@ struct sigevent {
 	void (*sigev_notify_function)(union sigval);
 	// MISSING: sigev_notify_attributes
 };
-
-#if defined(__x86_64__) || defined(__aarch64__)
-// TODO: This is wrong for AArch64.
-
-typedef struct {
-	unsigned long oldmask;
-	unsigned long gregs[16];
-	unsigned long pc, pr, sr;
-	unsigned long gbr, mach, macl;
-	unsigned long fpregs[16];
-	unsigned long xfpregs[16];
-	unsigned int fpscr, fpul, ownedfp;
-} mcontext_t;
-
-typedef struct __ucontext {
-	unsigned long uc_flags;
-	struct __ucontext *uc_link;
-	stack_t uc_stack;
-	mcontext_t uc_mcontext;
-	sigset_t uc_sigmask;
-} ucontext_t;
-
-#else
-#error "Missing architecture specific code."
-#endif
 
 #ifdef __cplusplus
 }

@@ -9,3 +9,4 @@ _start:
 .size _start, . - _start
 
 .section .note.GNU-stack,"",%progbits
+

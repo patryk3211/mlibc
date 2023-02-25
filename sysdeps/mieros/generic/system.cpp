@@ -46,4 +46,14 @@ namespace mlibc {
     int sys_execve(const char *path, char *const argv[], char *const envp[]) {
         return -syscall(SYS_execve, path, argv, envp);
     }
+
+    int sys_getcwd(char *buffer, size_t size) {
+        ssysarg_t result = syscall(SYS_getcwd, buffer, size);
+
+        if(result < 0)
+            return -result;
+
+        return 0;
+    }
 }
+

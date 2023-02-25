@@ -31,8 +31,10 @@ typedef unsigned long long sysarg_t;
 #define SYS_pipe   20
 #define SYS_sigmask 21
 #define SYS_sigaction 22
+#define SYS_getcwd 23
+#define SYS_kill 24
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -96,7 +98,7 @@ static inline sysarg_t syscall6a(sysarg_t call, sysarg_t arg0, sysarg_t arg1, sy
 #define __SYSCALLN_(M, ...) M(__VA_ARGS__)
 #define SYSCALL(call, ...) __SYSCALLN_(__SYSCALL_XCONCAT(__SYSCALL_N, __SYSCALL_NARGS(__VA_ARGS__)), call, ##__VA_ARGS__)
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 }
 
 static inline sysarg_t syscall(sysarg_t call) {
@@ -127,7 +129,7 @@ static inline sysarg_t _syscall(sysarg_t call, sysarg_t arg0, sysarg_t arg1, sys
     return syscall6a(call, arg0, arg1, arg2, arg3, arg4, arg5);
 }
 
-template<typename... Args> sysarg_t syscall(sysarg_t call, Args... args) {
+template<typename... Args> inline sysarg_t syscall(sysarg_t call, Args... args) {
     return _syscall(call, (sysarg_t)(args)...);
 }
 
