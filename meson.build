@@ -166,6 +166,8 @@ elif host_machine.system() == 'mieros'
     rtdl_include_dirs += include_directories(get_option('linux_kernel_headers'))
 	libc_include_dirs += include_directories(get_option('linux_kernel_headers'))
 
+    internal_conf.set10('MLIBC_MAP_DSO_SEGMENTS', true)
+
 	subdir('sysdeps/mieros')
 else
 	error('No sysdeps defined for OS: ' + host_machine.system())
