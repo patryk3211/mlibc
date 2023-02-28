@@ -33,6 +33,8 @@ typedef unsigned long long sysarg_t;
 #define SYS_sigaction 22
 #define SYS_getcwd 23
 #define SYS_kill 24
+#define SYS_sigreturn 25
+#define SYS_fdflags 26
 
 #if defined(__cplusplus)
 extern "C" {

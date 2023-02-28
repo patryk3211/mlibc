@@ -1,3 +1,4 @@
+#include "mlibc/posix-sysdeps.hpp"
 #include <mlibc/all-sysdeps.hpp>
 
 #include <mieros/syscall.h>
@@ -123,7 +124,7 @@ namespace mlibc {
         ssysarg_t ret = syscall(SYS_read, handle, buffer, max_size);
 
         if(ret < 0)
-            return ret;
+            return -ret;
 
         *bytes_read = ret;
         return 0;
@@ -131,5 +132,36 @@ namespace mlibc {
 
     int sys_pipe(int *fds, int flags) {
         return -syscall(SYS_pipe, fds, flags);
+    }
+
+    int sys_fcntl(int fd, int request, va_list args, int *result) {
+        ssysarg_t ret = -ENOTSUP;
+
+        switch(request) {
+            case F_DUPFD:
+                ret = syscall(SYS_dup, fd, va_arg(args, int), DUP_SOFT);
+                break;
+            case F_DUPFD_CLOEXEC:
+                ret = syscall(SYS_dup, fd, va_arg(args, int), DUP_SOFT | O_CLOEXEC);
+                break;
+            case F_SETFD:
+                ret = syscall(SYS_fdflags, fd, va_arg(args, int) | FDF_SETD);
+                break;
+            case F_GETFD:
+                ret = syscall(SYS_fdflags, fd, FDF_GETD);
+                break;
+            case F_SETFL:
+                ret = syscall(SYS_fdflags, fd, va_arg(args, int) | FDF_SETS);
+                break;
+            case F_GETFL:
+                ret = syscall(SYS_fdflags, fd, FDF_GETS);
+                break;
+        }
+
+        if(ret < 0)
+            return -ret;
+
+        *result = ret;
+        return 0;
     }
 }
