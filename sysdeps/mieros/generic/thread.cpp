@@ -1,3 +1,4 @@
+#include "mlibc/posix-sysdeps.hpp"
 #include <mlibc/all-sysdeps.hpp>
 
 #include <mieros/syscall.h>
@@ -34,6 +35,20 @@ namespace mlibc {
 
     gid_t sys_getegid() {
         return syscall(SYS_getid, PROCID_EGID);
+    }
+
+    int sys_getpgid(pid_t pid, pid_t *pgid) {
+        ssysarg_t ret = syscall(SYS_getpgid, pid);
+
+        if(ret < 0)
+            return -ret;
+
+        *pgid = ret;
+        return 0;
+    }
+
+    int sys_setpgid(pid_t pid, pid_t pgid) {
+        return -syscall(SYS_setpgid, pid, pgid);
     }
 
     int sys_waitpid(pid_t pid, int* status, int flags, struct rusage*, pid_t* ret_pid) {

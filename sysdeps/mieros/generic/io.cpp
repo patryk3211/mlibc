@@ -4,6 +4,7 @@
 #include <mieros/syscall.h>
 #include <sys/ioctl.h>
 #include <errno.h>
+#include <asm/stat.h>
 
 namespace mlibc {
     int sys_open(const char *pathname, int flags, mode_t mode, int *fd) {
@@ -162,6 +163,50 @@ namespace mlibc {
             return -ret;
 
         *result = ret;
+        return 0;
+    }
+
+    int sys_stat(fsfd_target fsfdt, int fd, const char *path, int flags, struct stat *statbuf) {
+        mieros_stat localStat;
+        if(fsfdt == fsfd_target::fd) {
+            // When we are resolving by file descriptor we provide
+            // an empty path to the kernel.
+            path = "";
+        } else if(fsfdt == fsfd_target::path) {
+            // When we are resolving by path we provide AT_FDCWD as fd
+            fd = AT_FDCWD;
+        } else if(fsfdt == fsfd_target::fd_path) {
+            // We don't need to change anything when we resolve by fd_path target
+        } else {
+            // Unknown target
+            return ENOTSUP;
+        }
+
+        ssysarg_t ret = syscall(SYS_stat, path, &localStat, fd, flags);
+
+        if(ret < 0)
+            return -ret;
+
+        statbuf->st_mode = localStat.f_mode;
+        statbuf->st_uid = localStat.f_uid;
+        statbuf->st_gid = localStat.f_gid;
+
+        statbuf->st_dev = localStat.f_dev;
+        statbuf->st_ino = localStat.f_ino;
+        statbuf->st_rdev = localStat.f_rdev;
+        statbuf->st_nlink = localStat.f_links;
+
+        statbuf->st_size = localStat.f_size;
+        statbuf->st_blksize = localStat.f_blksize;
+        statbuf->st_blocks = localStat.f_blocks;
+
+        statbuf->st_atim.tv_sec = localStat.f_atime;
+        statbuf->st_mtim.tv_sec = localStat.f_mtime;
+        statbuf->st_ctim.tv_sec = localStat.f_ctime;
+        statbuf->st_atim.tv_nsec = 0;
+        statbuf->st_mtim.tv_nsec = 0;
+        statbuf->st_ctim.tv_nsec = 0;
+
         return 0;
     }
 }
